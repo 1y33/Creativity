@@ -3,8 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from Attention import TransformerLayer
 
-class ViTEncoder(nn.Module):
-    def __init__(self,image_size, patch_size,n_layers,n_heads,d_embed):
+class ViT(nn.Module):
+    def __init__(self,image_size, patch_size,n_classes,n_layers,n_heads,d_embed):
         super().__init__()
         assert image_size % patch_size == 0, 'image size must be divisible by patch size'
         
@@ -13,6 +13,7 @@ class ViTEncoder(nn.Module):
         self.PatchEmbedding = nn.Conv2d(3,d_embed,kernel_size=patch_size,stride=patch_size)
         self.PositionalEmbedding = nn.Parameter(torch.randn(1,self.num_patches,d_embed),requires_grad=True)
         self.modules = nn.ModuleList([TransformerLayer(d_embed,n_heads) for _ in range(n_layers)])
+        self.output_proj = nn.Linear(d_embed,n_classes)
         
     def forward(self,x):
         x = self.PatchEmbedding(x) # batchsize, d_embed, num_patches, num_patches
@@ -21,6 +22,8 @@ class ViTEncoder(nn.Module):
         for module in self.modules:
             x = module(x)
         
+        x = self.output_proj(x.mean(1))
+        
         return x
     
-    
+
