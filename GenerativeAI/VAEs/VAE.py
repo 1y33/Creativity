@@ -106,11 +106,18 @@ class VAEDecoder(nn.Module):
         return x
     
 class VAE(nn.Module):
+    '''
+        Create your own encoder_backbone and decoder_backbone
+        Use the classes from above to create your own VAE backbone
+        Added MaxPool to reduce the dimensinon. Most 
+    '''
+    
     def __init__(self,encoder_backbone,decoder_backbone):
         super().__init__()
         
         self.encoder = VAEEncoder(encoder_backbone)
         self.decoder = VAEDecoder(decoder_backbone)
+
 
     def forward(self,x,train=True):
         if train == False:
@@ -128,3 +135,55 @@ class VAE(nn.Module):
         total_loss = reconstruction_loss + kl_loss
 
         return total_loss,reconstruction_loss,kl_loss
+    
+    def setParams(self,learing_rate,optimizer="Adam",scheduler_true=True,scheduler=None):
+        self.learning_rate = learing_rate 
+        
+        if optimizer == "Adam":
+            self.optimzier = torch.optim.Adam(self.parameters(),lr=self.learning_rate)
+        elif optimizer == "AdamW":
+            self.optimzier = torch.optim.AdamW(self.parameters(),lr=self.learning_rate)
+        elif optimizer == "SGD":
+            self.optimzier = torch.optim.SGD(self.parameters(),lr=self.learning_rate)
+
+        
+        if scheduler_true == False:
+            self.scheduler = None
+        else:
+            if scheduler == None:
+                self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimzier)
+            else:
+                self.scheduler = scheduler
+                
+    def train_step(self,n_epochs,dataLoader):
+        self.train()
+        
+        len_dataloader = len(dataLoader)
+        
+        self.total_loss = []
+        self.reconstruction_loss = []
+        self.kl_loss = []
+        
+        for epoch in range(n_epochs):
+            
+            running_loss = 0.0
+            for x in dataLoader:
+                x = x.to(self.device)
+                self.optimzier.zero_grad()
+                
+                total_loss,reconstruction_loss,kl_loss = self.calculateLoss(x)
+                total_loss.backward()
+                self.optimzier.step()
+                
+                self.total_loss.append(total_loss.item())
+                self.reconstruction_loss.append(reconstruction_loss.item())
+                self.kl_loss.append(kl_loss.item())
+                # Append for further stats 
+                
+                running_loss += total_loss.item()
+            
+            print(f"{epoch+1}/{n_epochs} Loss: {running_loss/len_dataloader}")
+            
+            self.scheduler.step()
+            
+        print("Finished Training")
