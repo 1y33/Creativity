@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 class BaseConv(nn.Module):
     def __init__(self, conv_layer, in_channels, out_channels, kernel=3, stride=1, padding=1, activation=nn.ReLU()):
         super().__init__()
