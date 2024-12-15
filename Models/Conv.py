@@ -2,16 +2,29 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+########### Convolutional Blocks ###########
+# BaseConv: Base class for Convolutional layers
+# Conv: Convolutional layer
+# ConvTr: Convolutional Transpose layer
+# ResidualConv: Residual block with Convolutional layer
+# NResidual: Multiple Residual blocks
+# MaxPool: Max Pooling layer
+# BottleNeck: BottleNeck block
+# 
+# Things to note:
+# More classes will be added here that will be related to Convolutional part of NN
+#############################################
+
+
 
 class BaseConv(nn.Module):
-    def __init__(self, conv_layer, in_channels, out_channels, kernel=3, stride=1, padding=1, activation=nn.ReLU()):
+    def __init__(self, conv_layer, in_channels, out_channels, kernel=3, stride=1, padding=1, activation=nn.ReLU(inplace=True)):
         super().__init__()
         self.layers = nn.Sequential(
             conv_layer(in_channels, out_channels, kernel_size=kernel, stride=stride, padding=padding),
             nn.BatchNorm2d(out_channels),
             activation
         )
-
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.layers(x)
