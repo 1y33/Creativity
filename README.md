@@ -1,1 +1,2 @@
-DIffusion Models I will do . Now learning to do a basic one. More things to come. Maybe create a full training LOOP and only having a model to use . idk we will see
+Ok so now the main project will be about implementing a lot of things in pytorch , a lot of modules
+Creativity will let you create simple NNs and train them
