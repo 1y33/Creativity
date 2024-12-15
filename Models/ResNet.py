@@ -1,6 +1,10 @@
 import torch
 import torch.nn as nn
-import Blocks.Conv as Conv
+import Conv as Conv
+
+# ResNet    
+# Maybe add More Models here and create this file to be only CNN models
+
 
 class ResNet(nn.Module):
     def __init__(self,image_size,n_blocks = 4,n_layers = [2,3,3,2],features=[64,128,256,512],n_classes=10):

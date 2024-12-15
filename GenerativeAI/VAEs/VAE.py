@@ -3,6 +3,18 @@ import torch.nn as nn
 import torch.nn.functional as F
 from Attention import SelfAttention
 
+########### VAE Blocks ###########
+# VAEResicualBlock: Residual block for VAE
+# VAEAttentionBlock: Attention block for VAE
+# VAEEncoder: Encoder for VAE
+# VAEDecoder: Decoder for VAE
+# VAE: VAE model
+#
+# Things to note:
+# Maybe create a special zone for VAE models
+#################################
+
+
 class VAEResicualBlock(nn.Module):
     def __init__(self,in_channels,out_channels):
         super().__init__()
