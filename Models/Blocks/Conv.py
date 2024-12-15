@@ -12,6 +12,7 @@ class BaseConv(nn.Module):
             activation
         )
 
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.layers(x)
 
