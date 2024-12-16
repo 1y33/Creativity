@@ -104,6 +104,36 @@ class VAEDecoder(nn.Module):
         x = self.backbone(x)
 
         return x
+
+def GenerateEncoderBlock(in_channels,out_channels):
+    return nn.Sequential(
+        VAEResicualBlock(in_channels,out_channels),
+        VAEAttentionBlock(out_channels),
+        nn.MaxPool2d(2,2)
+    )
+    
+def GenerateDecoderBlock(in_channels,out_channels):
+    return nn.Sequential(
+        VAEResicualBlock(in_channels,out_channels),
+        VAEAttentionBlock(out_channels),
+        nn.Upsample(2,2)
+    )
+
+def generateBackbones(reduction,image_channels = 3, first_feature=64):
+    img_channels = img_channels
+    first_feature = first_feature
+
+    encoder = nn.ModuleList()
+    encoder.append(GenerateEncoderBlock(img_channels,first_feature))
+    encoder.append([GenerateEncoderBlock(first_feature * 2 ** (i-1),first_feature * 2 **i) for i in range(reduction-1)])
+    
+    decoder = nn.ModuleList()
+    decoder.append([GenerateDecoderBlock(first_feature* 2 **(reduction-i),first_feature* 2 **(reduction-i-1)) for i in range(reduction-1)])
+    decoder.append(GenerateDecoderBlock(first_feature,img_channels))
+    
+    return encoder,decoder
+    
+    
     
 class VAE(nn.Module):
     '''
