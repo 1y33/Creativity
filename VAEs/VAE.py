@@ -1,7 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from Attention import SelfAttention
+
+
+from Models.Attention import SelfAttention
 
 ########### VAE Blocks ###########
 # VAEResicualBlock: Residual block for VAE
@@ -120,7 +122,8 @@ def GenerateDecoderBlock(in_channels,out_channels):
     )
 
 def generateBackbones(reduction,image_channels = 3, first_feature=64):
-    img_channels = img_channels
+    
+    img_channels = image_channels
     first_feature = first_feature
 
     encoder = nn.ModuleList()
